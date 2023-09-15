@@ -1,5 +1,6 @@
 package app.navigational.RoutingReportSystem.Entities;
 
+import app.navigational.RoutingReportSystem.Utilities.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,13 +39,13 @@ public class Role {
     private Integer id;
 
     @Column(name = "rolename")
-    private String roleName;
+    private RoleType roleName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
 
-    public Role(String roleName) {
+    public Role(RoleType roleName) {
         this.roleName = roleName;
     }
 }
