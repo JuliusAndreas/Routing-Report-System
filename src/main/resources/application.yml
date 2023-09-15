@@ -1,3 +1,5 @@
+jwt:
+  secret: Z3V0c2lzc3Ryb25nZXJ0aGFuZ3JpZmZpdGhldmVuaWZncmlmZml0aHBvc3Nlc3Nlc2dvZGx5cG93ZXJzaGVzdGlsbGNhbm5vdGJlYXRndXRz
 logging:
   level:
     org:
@@ -10,7 +12,7 @@ logging:
 spring:
   datasource:
     password: postgres
-    url: jdbc:postgresql://localhost:5432/test_erp
+    url: jdbc:postgresql://localhost:5432/navigational
     username: postgres
   jpa:
     hibernate:
@@ -18,3 +20,11 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   main:
     banner-mode: 'off'
+
+redis:
+  singleServerConfig:
+    address: "redis://127.0.0.1:${REDIS_PORT:6379}"
+
+intervalInCron:
+  fetchRestaurantsFromDBtoCache: 0 0 0 * * ?
+  flushRestaurantsFromCache: 0 55 0 * * *
