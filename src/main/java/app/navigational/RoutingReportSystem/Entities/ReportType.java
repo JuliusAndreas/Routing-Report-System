@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -23,6 +24,9 @@ public class ReportType {
 
     @Column(name = "typeName")
     private String typeName;
+
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 
     @Column(name = "verifiable")
     private Boolean verifiable;

@@ -1,5 +1,6 @@
 package app.navigational.RoutingReportSystem.Entities;
 
+import app.navigational.RoutingReportSystem.Utilities.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,5 +52,9 @@ public class User {
             role.setUser(this);
         }
         this.roles = roles;
+    }
+
+    public void promoteToOperator() {
+        this.roles.add(new Role(RoleType.OPERATOR));
     }
 }

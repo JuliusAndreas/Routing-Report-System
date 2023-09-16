@@ -48,4 +48,10 @@ public class Role {
     public Role(RoleType roleName) {
         this.roleName = roleName;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Role role = (Role) obj;
+        return role.getRoleName() == this.roleName;
+    }
 }

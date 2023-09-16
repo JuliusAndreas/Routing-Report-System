@@ -54,4 +54,20 @@ public class Report {
     @ToString.Exclude
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<ReportDomainAttribute> domainAttributes;
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        this.likes--;
+    }
+
+    public void incrementDislikes() {
+        this.dislikes++;
+    }
+
+    public void decrementDislikes() {
+        this.dislikes--;
+    }
 }
