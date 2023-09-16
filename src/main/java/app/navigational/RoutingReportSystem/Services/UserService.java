@@ -14,6 +14,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @AllArgsConstructor
 @Service
@@ -39,9 +40,8 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
         User userToBeUpdated = foundUser.get();
-        User user = userMapper.fromDTO(userDTO);
-        userToBeUpdated.setPassword(user.getPassword());
-        userToBeUpdated.setPassword(user.getUsername());
+        userToBeUpdated.setPassword(userDTO.getPassword());
+        userToBeUpdated.setPassword(userDTO.getUsername());
         userRepository.save(userToBeUpdated);
     }
 
@@ -58,7 +58,16 @@ public class UserService {
         if (foundUser.isEmpty()) {
             throw new NotFoundException("User not found");
         }
-        return userMapper.toDTO(foundUser.get());
+        UserDTO userDTO = userMapper.toDTO(foundUser.get());
+        Set<Role> userRoles = roleRepository.findRolesByUserId(id);
+        if (userRoles.contains(new Role(RoleType.ADMIN))) {
+            userDTO.setRoleType(RoleType.ADMIN);
+        } else if (userRoles.contains(new Role(RoleType.OPERATOR))) {
+            userDTO.setRoleType(RoleType.OPERATOR);
+        } else {
+            userDTO.setRoleType(RoleType.USER);
+        }
+        return userDTO;
     }
 
     public void promoteToOperator(@NonNull Integer id) {

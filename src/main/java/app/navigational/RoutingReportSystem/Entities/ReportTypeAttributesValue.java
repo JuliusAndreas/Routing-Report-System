@@ -25,4 +25,9 @@ public class ReportTypeAttributesValue {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyId")
     private ReportTypeAttributesKey key;
+
+    public ReportTypeAttributesValue(String attributeValue, ReportTypeAttributesKey key) {
+        this.attributeValue = attributeValue;
+        this.key = key;
+    }
 }

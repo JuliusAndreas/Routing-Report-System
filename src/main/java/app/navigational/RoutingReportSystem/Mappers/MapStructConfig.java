@@ -10,4 +10,14 @@ public class MapStructConfig {
     public UserMapper userMapper() {
         return Mappers.getMapper(UserMapper.class);
     }
+
+    @Bean
+    public KeyMapper keyMapper() {
+        return Mappers.getMapper(KeyMapper.class);
+    }
+
+    @Bean
+    public ValueMapper valueMapper() {
+        return Mappers.getMapper(ValueMapper.class);
+    }
 }

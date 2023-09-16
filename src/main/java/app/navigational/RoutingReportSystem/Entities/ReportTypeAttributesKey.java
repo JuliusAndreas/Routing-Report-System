@@ -31,4 +31,13 @@ public class ReportTypeAttributesKey {
     @ToString.Exclude
     @OneToMany(mappedBy = "key", cascade = CascadeType.ALL)
     private List<ReportTypeAttributesValue> values;
+
+    public ReportTypeAttributesKey(String attributeKey) {
+        this.attributeKey = attributeKey;
+    }
+
+    public ReportTypeAttributesKey(String attributeKey, ReportType reportType) {
+        this.attributeKey = attributeKey;
+        this.reportType = reportType;
+    }
 }
