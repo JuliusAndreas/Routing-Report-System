@@ -11,4 +11,7 @@ public interface ReportAttributeValueRepository extends JpaRepository<ReportType
 
     @Query("select v from ReportTypeAttributesValue v where v.key.id = :queryId")
     List<ReportTypeAttributesValue> findValuesByKeyId(@Param("queryId") Integer keyId);
+
+    @Query("select v.attributeValue from ReportTypeAttributesValue v where v.key.attributeKey = :queryName")
+    List<String> findValuesByKeyName(@Param("queryName") String keyName);
 }

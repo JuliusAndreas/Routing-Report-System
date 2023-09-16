@@ -55,6 +55,16 @@ public class Report {
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<ReportDomainAttribute> domainAttributes;
 
+    public void setProperties(LocalDateTime createdAt, LocalDateTime expiresAt, ReportType reportType,
+                              User user, Boolean verifieable, List<ReportDomainAttribute> domainAttributes) {
+        this.createdAt = createdAt;
+        this.expiresAt = expiresAt;
+        this.reportType = reportType;
+        this.user = user;
+        this.domainAttributes = domainAttributes;
+        this.verified = verifieable ? VerifiedType.NOT_VERIFIED : VerifiedType.VERIFIED;
+    }
+
     public void incrementLikes() {
         this.likes++;
     }

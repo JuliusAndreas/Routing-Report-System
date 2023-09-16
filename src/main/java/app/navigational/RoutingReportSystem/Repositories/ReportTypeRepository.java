@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ReportTypeRepository extends JpaRepository<ReportType, Integer> {
 
@@ -15,4 +16,10 @@ public interface ReportTypeRepository extends JpaRepository<ReportType, Integer>
 
     @Query("select k from ReportTypeAttributesKey k where k.reportType.id = :queryId")
     List<ReportTypeAttributesKey> findAttributeKeysPerType(@Param("queryId") Integer id);
+
+    @Query("select k.attributeKey from ReportTypeAttributesKey k where k.reportType.id = :queryId")
+    Set<String> findAttributeKeysSetPerType(@Param("queryId") Integer id);
+
+    @Query("select t from ReportType t where t.typeName = :queryName")
+    ReportType findReportTypeByTypeName(@Param("queryName") String name);
 }

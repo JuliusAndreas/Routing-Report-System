@@ -9,6 +9,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -46,6 +47,6 @@ public class ReportType {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "reportType", cascade = CascadeType.ALL)
-    private List<ReportTypeAttributesKey> keys;
+    private Set<ReportTypeAttributesKey> keys;
 
 }

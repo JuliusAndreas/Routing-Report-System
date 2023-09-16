@@ -28,4 +28,10 @@ public class ReportDomainAttribute {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reportID")
     private Report report;
+
+    public ReportDomainAttribute(String domainAttributeKey, String domainAttributeValue, Report report) {
+        this.domainAttributeKey = domainAttributeKey;
+        this.domainAttributeValue = domainAttributeValue;
+        this.report = report;
+    }
 }

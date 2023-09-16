@@ -41,4 +41,10 @@ public class ReportTypeAttributesKey {
         this.attributeKey = attributeKey;
         this.reportType = reportType;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        ReportTypeAttributesKey key = (ReportTypeAttributesKey) obj;
+        return key.getAttributeKey() == this.attributeKey;
+    }
 }

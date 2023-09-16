@@ -25,5 +25,5 @@ public class ReportDTO {
     private String reportTypeName;
 
     @JsonView(Views.Public.class)
-    private Map<AttributeKeyDTO, AttributeValueDTO> domainAttributes;
+    private Map<String, String> domainAttributes;
 }
