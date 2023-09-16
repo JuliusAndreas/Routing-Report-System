@@ -9,7 +9,7 @@ import java.util.Set;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 
-    @Query("select r from roles r where r.user.id = :queryId")
+    @Query("select r from Role r where r.user.id = :queryId")
     Set<Role> findRolesByUserId(@Param("queryId") Integer id);
 
 }

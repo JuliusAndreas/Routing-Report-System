@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface ReportTypeRepository extends JpaRepository<ReportType, Integer> {
 
-    @Query("select k.attributeKey from ReportType r, r.keys k where r.id = :queryId")
+    @Query("select k.attributeKey from ReportTypeAttributesKey k where k.reportType.id = :queryId")
     List<String> findAttributeKeysStringsPerType(@Param("queryId") Integer id);
 
-    @Query("select k from ReportType r, r.keys k where r.id = :queryId")
+    @Query("select k from ReportTypeAttributesKey k where k.reportType.id = :queryId")
     List<ReportTypeAttributesKey> findAttributeKeysPerType(@Param("queryId") Integer id);
 }

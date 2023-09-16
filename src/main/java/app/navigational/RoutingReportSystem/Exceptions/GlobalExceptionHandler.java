@@ -1,10 +1,10 @@
 package app.navigational.RoutingReportSystem.Exceptions;
 
+import app.navigational.RoutingReportSystem.Utilities.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import restaurant.manager.RestaurantWebServiceWithDatabase.Utilities.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

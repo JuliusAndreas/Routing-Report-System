@@ -25,4 +25,9 @@ public class MapStructConfig {
     public ReportTypeMapper reportTypeMapper() {
         return Mappers.getMapper(ReportTypeMapper.class);
     }
+
+    @Bean
+    public ReportMapper reportMapper() {
+        return Mappers.getMapper(ReportMapper.class);
+    }
 }

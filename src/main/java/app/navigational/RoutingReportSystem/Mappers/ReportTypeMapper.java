@@ -17,7 +17,7 @@ public interface ReportTypeMapper {
     @Mapping(target = "verifiable", source = "reportType.verifiable")
     @Mapping(target = "duration", source = "reportType.duration")
     @Mapping(target = "extensionDuration", source = "reportType.extensionDuration")
-    @Mapping(target = "durationUnit", expression = "java(chronoToString(reportType.durationUnit))")
+    @Mapping(target = "durationUnit", expression = "java(chronoToString(reportType.getDurationUnit()))")
     ReportTypeDTO toDTO(ReportType reportType);
 
     @BeanMapping(ignoreByDefault = true)
@@ -25,7 +25,7 @@ public interface ReportTypeMapper {
     @Mapping(target = "verifiable", source = "reportTypeDTO.verifiable")
     @Mapping(target = "duration", source = "reportTypeDTO.duration")
     @Mapping(target = "extensionDuration", source = "reportTypeDTO.extensionDuration")
-    @Mapping(target = "durationUnit", expression = "java(stringToChrono(reportTypeDTO.durationUnit))")
+    @Mapping(target = "durationUnit", expression = "java(stringToChrono(reportTypeDTO.getDurationUnit()))")
     ReportType fromDTO(ReportTypeDTO reportTypeDTO);
 
     default String chronoToString(ChronoUnit chronoUnit) {

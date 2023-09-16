@@ -1,7 +1,6 @@
 package app.navigational.RoutingReportSystem.Mappers;
 
 import app.navigational.RoutingReportSystem.DTOs.AttributeValueDTO;
-import app.navigational.RoutingReportSystem.Entities.ReportTypeAttributesKey;
 import app.navigational.RoutingReportSystem.Entities.ReportTypeAttributesValue;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -19,7 +18,7 @@ public interface ValueMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "attributeValue", source = "attributeValueDTO.attributeValue")
-    ReportTypeAttributesKey fromDTO(AttributeValueDTO attributeValueDTO);
+    ReportTypeAttributesValue fromDTO(AttributeValueDTO attributeValueDTO);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "attributeValue", source = "values.attributeValue")
