@@ -15,6 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "ReportTypeAttributesKeys")
 public class ReportTypeAttributesKey {
+    @ToString.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

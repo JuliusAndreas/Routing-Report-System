@@ -20,4 +20,9 @@ public class MapStructConfig {
     public ValueMapper valueMapper() {
         return Mappers.getMapper(ValueMapper.class);
     }
+
+    @Bean
+    public ReportTypeMapper reportTypeMapper() {
+        return Mappers.getMapper(ReportTypeMapper.class);
+    }
 }
