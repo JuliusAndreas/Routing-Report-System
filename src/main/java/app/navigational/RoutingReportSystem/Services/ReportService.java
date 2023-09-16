@@ -11,6 +11,7 @@ import app.navigational.RoutingReportSystem.Repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -63,5 +64,21 @@ public class ReportService {
         report.setProperties(now, reportExpiration, reportType, foundUser.get(),
                 reportType.getVerifiable(), domainAttributeList);
         reportRepository.save(report);
+    }
+
+    public List<ReportDTO> getVerifiableReports() {
+        return reportMapper.toDTO(reportRepository.getAllUnverifiedReports());
+    }
+
+    public List<ReportDTO> getAllNearbyActiveReports(@NonNull String wktLineString) throws ParseException {
+        return reportMapper.toDTO(reportRepository.getAllNearbyReports(wktLineString));
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void deleteReport(@NonNull Integer id) {
+        if (!reportRepository.existsById(id)) {
+            throw new NotFoundException("No Report was found to be deleted");
+        }
+        reportRepository.deleteById(id);
     }
 }
