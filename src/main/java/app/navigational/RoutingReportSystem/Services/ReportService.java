@@ -8,6 +8,7 @@ import app.navigational.RoutingReportSystem.Entities.User;
 import app.navigational.RoutingReportSystem.Exceptions.NotFoundException;
 import app.navigational.RoutingReportSystem.Mappers.ReportMapper;
 import app.navigational.RoutingReportSystem.Repositories.*;
+import app.navigational.RoutingReportSystem.Utilities.VerifiedType;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -30,11 +31,84 @@ public class ReportService {
 
     @Transactional(rollbackOn = {Exception.class})
     public void submitReport(@NonNull ReportDTO reportDTO, @NonNull Integer userId) {
-        Report report = reportMapper.fromDTO(reportDTO);
         Optional<User> foundUser = userRepository.findById(userId);
         if (foundUser.isEmpty()) {
             throw new NotFoundException("User not found");
         }
+        ReportType reportType = validateReportTypeAndAttributes(reportDTO, userId);
+        Report report = reportMapper.fromDTO(reportDTO);
+        List<Report> identicalReports = reportRepository.getAllReportsWithGivenParameters(report.getLocation(),
+                LocalDateTime.now(), reportType.getId());
+        if (identicalReports.isEmpty() || identicalReports == null) {
+            return;
+        }
+        List<ReportDomainAttribute> domainAttributeList = attributesMapToList(
+                reportDTO.getDomainAttributes(), report);
+        if (reportType.getVerifiable()) {
+            report.setPropertiesForVerifiableReport(reportType, foundUser.get(), domainAttributeList);
+            reportRepository.save(report);
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reportExpiration = now.plus(reportType.getDuration(), reportType.getDurationUnit());
+        report.setPropertiesForNonVerifiableReport(now, reportExpiration, reportType, foundUser.get(),
+                domainAttributeList);
+        reportRepository.save(report);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void verifyReport(@NonNull Integer reportId) {
+        Optional<Report> foundReport = reportRepository.findByIdJoinFetchType(reportId);
+        if (foundReport.isEmpty()) {
+            throw new NotFoundException("Such report does not exist or is already verified");
+        }
+        Report report = foundReport.get();
+        report.setVerified(VerifiedType.VERIFIED);
+        LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(now);
+        report.setExpiresAt(now.plus(report.getReportType().getDuration(), report.getReportType().getDurationUnit()));
+        reportRepository.save(report);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void likeReport(@NonNull Integer reportId) {
+        Optional<Report> foundReport = reportRepository.findById(reportId);
+        if (foundReport.isEmpty()) {
+            throw new NotFoundException("Such report does not exist");
+        }
+        Report report = foundReport.get();
+        report.incrementLikes();
+        reportRepository.save(report);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void dislikeReport(@NonNull Integer reportId) {
+        Optional<Report> foundReport = reportRepository.findById(reportId);
+        if (foundReport.isEmpty()) {
+            throw new NotFoundException("Such report does not exist");
+        }
+        Report report = foundReport.get();
+        report.incrementDislikes();
+        reportRepository.save(report);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void deleteReport(@NonNull Integer id) {
+        if (!reportRepository.existsById(id)) {
+            throw new NotFoundException("No Report was found to be deleted");
+        }
+        reportRepository.deleteById(id);
+    }
+
+    public List<ReportDTO> getVerifiableReports() {
+        return reportMapper.toDTO(reportRepository.getAllUnverifiedReports());
+    }
+
+    public List<ReportDTO> getAllNearbyActiveReports(@NonNull String wktLineString) throws ParseException {
+        return reportMapper.toDTO(reportRepository.getAllNearbyReports(wktLineString, LocalDateTime.now()));
+    }
+
+    public ReportType validateReportTypeAndAttributes(ReportDTO reportDTO, Integer userId) {
         ReportType reportType = typeRepository.findReportTypeByTypeName(reportDTO.getReportTypeName());
         if (reportType == null) {
             throw new NotFoundException("Unknown report type");
@@ -52,6 +126,10 @@ public class ReportService {
                         .contains(domainAttributes.get(key)))) {
             throw new NotFoundException("Unknown attribute value(s)");
         }
+        return reportType;
+    }
+
+    public List<ReportDomainAttribute> attributesMapToList(Map<String, String> domainAttributes, Report report) {
         List<ReportDomainAttribute> domainAttributeList = new ArrayList<>();
         for (Map.Entry<String, String> entry : domainAttributes.entrySet()) {
             String key = entry.getKey();
@@ -59,26 +137,6 @@ public class ReportService {
             ReportDomainAttribute attribute = new ReportDomainAttribute(key, value, report);
             domainAttributeList.add(attribute);
         }
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reportExpiration = now.plus(reportType.getDuration(), reportType.getDurationUnit());
-        report.setProperties(now, reportExpiration, reportType, foundUser.get(),
-                reportType.getVerifiable(), domainAttributeList);
-        reportRepository.save(report);
-    }
-
-    public List<ReportDTO> getVerifiableReports() {
-        return reportMapper.toDTO(reportRepository.getAllUnverifiedReports());
-    }
-
-    public List<ReportDTO> getAllNearbyActiveReports(@NonNull String wktLineString) throws ParseException {
-        return reportMapper.toDTO(reportRepository.getAllNearbyReports(wktLineString));
-    }
-
-    @Transactional(rollbackOn = {Exception.class})
-    public void deleteReport(@NonNull Integer id) {
-        if (!reportRepository.existsById(id)) {
-            throw new NotFoundException("No Report was found to be deleted");
-        }
-        reportRepository.deleteById(id);
+        return domainAttributeList;
     }
 }
