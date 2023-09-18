@@ -4,6 +4,8 @@ import app.navigational.RoutingReportSystem.DTOs.ReportDTO;
 import app.navigational.RoutingReportSystem.Exceptions.NotFoundException;
 import app.navigational.RoutingReportSystem.Services.ReportService;
 import app.navigational.RoutingReportSystem.Utilities.OkResponse;
+import app.navigational.RoutingReportSystem.Utilities.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ public class ReportsController {
     @Autowired
     private ReportService reportService;
 
+    @JsonView(Views.Public.class)
     @GetMapping("/")
     public List<ReportDTO> getNearbyReports(@RequestParam String wktPath) {
         List<ReportDTO> reportDTOList;
@@ -27,7 +30,7 @@ public class ReportsController {
             throw new RuntimeException("Invalid wkt for the path was sent");
         }
         if (reportDTOList.isEmpty()) {
-            throw new NotFoundException("No Verifiable report was found");
+            throw new NotFoundException("No nearby report was found");
         }
         return reportDTOList;
     }
@@ -51,6 +54,7 @@ public class ReportsController {
         return new ResponseEntity<>(new OkResponse("report successfully disliked"), HttpStatus.OK);
     }
 
+    @JsonView(Views.Public.class)
     @GetMapping("/verifiable")
     public List<ReportDTO> getVerifiableReports() {
         List<ReportDTO> reportDTOList = reportService.getVerifiableReports();

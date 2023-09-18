@@ -63,6 +63,8 @@ public class Report {
         this.user = user;
         this.domainAttributes = domainAttributes;
         this.verified = VerifiedType.VERIFIED;
+        this.likes = 0;
+        this.dislikes = 0;
     }
 
     public void setPropertiesForVerifiableReport(ReportType reportType, User user,
@@ -71,16 +73,18 @@ public class Report {
         this.user = user;
         this.domainAttributes = domainAttributes;
         this.verified = VerifiedType.NOT_VERIFIED;
+        this.likes = 0;
+        this.dislikes = 0;
     }
 
     public void incrementLikes() {
         this.likes++;
-        this.expiresAt.plus(reportType.getExtensionDuration(), reportType.getDurationUnit());
+        this.expiresAt = this.expiresAt.plus(reportType.getExtensionDuration(), reportType.getDurationUnit());
     }
 
     public void incrementDislikes() {
         this.dislikes++;
-        this.expiresAt.minus(reportType.getExtensionDuration(), reportType.getDurationUnit());
+        this.expiresAt = this.expiresAt.minus(reportType.getExtensionDuration(), reportType.getDurationUnit());
     }
 
 }

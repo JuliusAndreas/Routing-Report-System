@@ -22,13 +22,13 @@ public interface ReportMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "x", expression = "java(report.getLocation().getX())")
     @Mapping(target = "y", expression = "java(report.getLocation().getY())")
+    @Mapping(target = "reportTypeName", expression = "java(roleTypeToTypeName(report.getReportType()))")
+    @Mapping(target = "domainAttributes", expression = "java(attributeListToMap(report.getDomainAttributes()))")
     ReportDTO toDTO(Report report);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "x", expression = "java(reports.getLocation().getX())")
     @Mapping(target = "y", expression = "java(reports.getLocation().getY())")
-    @Mapping(target = "reportTypeName", expression = "java(roleTypeToTypeName(reports.getReportType()))")
-    @Mapping(target = "domainAttributes", expression = "java(attributeListToMap(reports.getDomainAttributes()))")
     List<ReportDTO> toDTO(Collection<Report> reports);
 
     @BeanMapping(ignoreByDefault = true)

@@ -7,6 +7,7 @@ import app.navigational.RoutingReportSystem.Entities.ReportType;
 import app.navigational.RoutingReportSystem.Entities.User;
 import app.navigational.RoutingReportSystem.Exceptions.NotFoundException;
 import app.navigational.RoutingReportSystem.Mappers.ReportMapper;
+import app.navigational.RoutingReportSystem.Projections.ReportSimpleView;
 import app.navigational.RoutingReportSystem.Repositories.*;
 import app.navigational.RoutingReportSystem.Utilities.VerifiedType;
 import jakarta.transaction.Transactional;
@@ -37,9 +38,9 @@ public class ReportService {
         }
         ReportType reportType = validateReportTypeAndAttributes(reportDTO, userId);
         Report report = reportMapper.fromDTO(reportDTO);
-        List<Report> identicalReports = reportRepository.getAllReportsWithGivenParameters(report.getLocation(),
-                LocalDateTime.now(), reportType.getId());
-        if (identicalReports.isEmpty() || identicalReports == null) {
+        List<ReportSimpleView> identicalReports = reportRepository.getAllReportsWithGivenParameters(report.getLocation(),
+                reportType.getId());
+        if (!identicalReports.isEmpty()) {
             return;
         }
         List<ReportDomainAttribute> domainAttributeList = attributesMapToList(
@@ -104,7 +105,10 @@ public class ReportService {
     }
 
     public List<ReportDTO> getAllNearbyActiveReports(@NonNull String wktLineString) throws ParseException {
-        return reportMapper.toDTO(reportRepository.getAllNearbyReports(wktLineString, LocalDateTime.now()));
+        List<Integer> reportIdsList = reportRepository.getAllNearbyReports(wktLineString);
+        List<Report> fetchedReports = reportRepository.getReportsJoinFetchTypeAttributesByIdList(reportIdsList);
+        List<ReportDTO> reportDTOList = reportMapper.toDTO(fetchedReports);
+        return reportDTOList;
     }
 
     public ReportType validateReportTypeAndAttributes(ReportDTO reportDTO, Integer userId) {
