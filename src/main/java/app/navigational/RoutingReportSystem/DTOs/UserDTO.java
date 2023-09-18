@@ -14,6 +14,9 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class UserDTO {
 
+    @JsonView(Views.Private.class)
+    private Integer id;
+
     @JsonView(Views.Public.class)
     private String username;
 
