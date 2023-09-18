@@ -11,6 +11,7 @@ import app.navigational.RoutingReportSystem.Utilities.RoleType;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,10 +24,12 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private UserMapper userMapper;
+    private PasswordEncoder bcryptEncoder;
 
     @Transactional(rollbackOn = {Exception.class})
     public void userSignup(@NonNull UserDTO userDTO) {
         User user = userMapper.fromDTO(userDTO);
+        user.setPassword(bcryptEncoder.encode(userDTO.getPassword()));
         Role userRole = new Role(RoleType.USER);
         userRole.setUser(user);
         userRepository.save(user);
@@ -40,7 +43,7 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
         User userToBeUpdated = foundUser.get();
-        userToBeUpdated.setPassword(userDTO.getPassword());
+        userToBeUpdated.setPassword(bcryptEncoder.encode(userDTO.getPassword()));
         userToBeUpdated.setUsername(userDTO.getUsername());
         userRepository.save(userToBeUpdated);
     }
