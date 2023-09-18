@@ -30,12 +30,13 @@ public class ReportTypeAttributesKeysService {
     private ValueMapper valueMapper;
 
     @Transactional(rollbackOn = {Exception.class})
-    public void addAttributeKey(@NonNull Integer reportTypeId, @NonNull String attributeKeyName) {
+    public void addAttributeKey(@NonNull Integer reportTypeId, @NonNull AttributeKeyDTO attributeKeyDTO) {
         Optional<ReportType> foundType = reportTypeRepository.findById(reportTypeId);
         if (foundType.isEmpty()) {
             throw new NotFoundException("Report type not found");
         }
-        ReportTypeAttributesKey attributesKey = new ReportTypeAttributesKey(attributeKeyName, foundType.get());
+        ReportTypeAttributesKey attributesKey = new ReportTypeAttributesKey(attributeKeyDTO.getAttributeKey(),
+                foundType.get());
         attributeKeyRepository.save(attributesKey);
     }
 

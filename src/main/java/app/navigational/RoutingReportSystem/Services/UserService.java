@@ -41,7 +41,7 @@ public class UserService {
         }
         User userToBeUpdated = foundUser.get();
         userToBeUpdated.setPassword(userDTO.getPassword());
-        userToBeUpdated.setPassword(userDTO.getUsername());
+        userToBeUpdated.setUsername(userDTO.getUsername());
         userRepository.save(userToBeUpdated);
     }
 

@@ -55,29 +55,36 @@ public class Report {
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<ReportDomainAttribute> domainAttributes;
 
-    public void setProperties(LocalDateTime createdAt, LocalDateTime expiresAt, ReportType reportType,
-                              User user, Boolean verifieable, List<ReportDomainAttribute> domainAttributes) {
+    public void setPropertiesForNonVerifiableReport(LocalDateTime createdAt, LocalDateTime expiresAt, ReportType reportType,
+                                                    User user, List<ReportDomainAttribute> domainAttributes) {
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
         this.reportType = reportType;
         this.user = user;
         this.domainAttributes = domainAttributes;
-        this.verified = verifieable ? VerifiedType.NOT_VERIFIED : VerifiedType.VERIFIED;
+        this.verified = VerifiedType.VERIFIED;
+        this.likes = 0;
+        this.dislikes = 0;
+    }
+
+    public void setPropertiesForVerifiableReport(ReportType reportType, User user,
+                                                 List<ReportDomainAttribute> domainAttributes) {
+        this.reportType = reportType;
+        this.user = user;
+        this.domainAttributes = domainAttributes;
+        this.verified = VerifiedType.NOT_VERIFIED;
+        this.likes = 0;
+        this.dislikes = 0;
     }
 
     public void incrementLikes() {
         this.likes++;
-    }
-
-    public void decrementLikes() {
-        this.likes--;
+        this.expiresAt = this.expiresAt.plus(reportType.getExtensionDuration(), reportType.getDurationUnit());
     }
 
     public void incrementDislikes() {
         this.dislikes++;
+        this.expiresAt = this.expiresAt.minus(reportType.getExtensionDuration(), reportType.getDurationUnit());
     }
 
-    public void decrementDislikes() {
-        this.dislikes--;
-    }
 }

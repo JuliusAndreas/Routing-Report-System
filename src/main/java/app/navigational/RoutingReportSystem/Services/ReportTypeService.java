@@ -27,13 +27,6 @@ public class ReportTypeService {
     private KeyMapper keyMapper;
 
     @Transactional(rollbackOn = {Exception.class})
-    public void addReportType(@NonNull ReportTypeDTO reportTypeDTO) {
-        ReportType reportType = reportTypeMapper.fromDTO(reportTypeDTO);
-        reportType.setCreatedAt(LocalDateTime.now());
-        reportTypeRepository.save(reportType);
-    }
-
-    @Transactional(rollbackOn = {Exception.class})
     public void updateReportType(@NonNull Integer id, @NonNull ReportTypeDTO reportTypeDTO) {
         Optional<ReportType> foundType = reportTypeRepository.findById(id);
         if (foundType.isEmpty()) {
@@ -42,16 +35,7 @@ public class ReportTypeService {
         ReportType reportType = reportTypeMapper.fromDTO(reportTypeDTO);
         reportType.setId(id);
         reportType.setCreatedAt(foundType.get().getCreatedAt());
-        reportTypeRepository.deleteById(id);
         reportTypeRepository.save(reportType);
-    }
-
-    @Transactional(rollbackOn = {Exception.class})
-    public void removeReportType(@NonNull Integer id) {
-        if (!reportTypeRepository.existsById(id)) {
-            throw new NotFoundException("No type was found to be deleted");
-        }
-        reportTypeRepository.deleteById(id);
     }
 
     public List<ReportTypeDTO> getAllReportTypes() {
@@ -64,6 +48,21 @@ public class ReportTypeService {
             reportTypeDTOS.add(temporaryDTO);
         }
         return reportTypeDTOS;
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void addReportType(@NonNull ReportTypeDTO reportTypeDTO) {
+        ReportType reportType = reportTypeMapper.fromDTO(reportTypeDTO);
+        reportType.setCreatedAt(LocalDateTime.now());
+        reportTypeRepository.save(reportType);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void removeReportType(@NonNull Integer id) {
+        if (!reportTypeRepository.existsById(id)) {
+            throw new NotFoundException("No type was found to be deleted");
+        }
+        reportTypeRepository.deleteById(id);
     }
 
     public List<AttributeKeyDTO> getAllAttributesKeysPerType(@NonNull Integer id) {
