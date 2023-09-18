@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -44,5 +46,15 @@ public class UserController {
             throw new NotFoundException("No User was found");
         }
         return fetchedUser;
+    }
+
+    @JsonView(Views.Public.class)
+    @GetMapping("/")
+    public List<UserDTO> getUsers() {
+        List<UserDTO> fetchedUsers = userService.getAllUsers();
+        if (fetchedUsers.isEmpty()) {
+            throw new NotFoundException("No User was found");
+        }
+        return fetchedUsers;
     }
 }

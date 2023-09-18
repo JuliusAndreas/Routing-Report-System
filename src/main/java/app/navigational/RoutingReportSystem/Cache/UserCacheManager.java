@@ -42,14 +42,14 @@ public class UserCacheManager {
                 new TypedJsonJacksonCodec(UserDTO.class));
         users.clear();
         users.addAll(userMapper.
-                toDTO(userRepository.findAll()));
+                toDTOWithRolesLoaded(userRepository.findAllUsersJoinFetchRoles()));
     }
 
-    public List<UserDTO> getRestaurantsCached() {
+    public List<UserDTO> getUsersCached() {
         return users;
     }
 
-    public UserDTO getRestaurantByIdCached(Integer id) {
+    public UserDTO getUserByIdCached(Integer id) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId().equals(id)) {
                 return users.get(i);
@@ -58,23 +58,31 @@ public class UserCacheManager {
         return null;
     }
 
-    @Transactional(rollbackOn = {Exception.class})
-    public void addRestaurantCached(User user) {
-        users.add(userMapper.toDTO(user));
+    public UserDTO getUserByUsernameCached(String username) {
+        for (UserDTO userDTO : users) {
+            if (userDTO.getUsername().equals(username)) {
+                return userDTO;
+            }
+        }
+        return null;
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public void addRestaurantCached(UserDTO userDTO) {
+    public void addUserCached(User user) {
+        users.add(userMapper.toDTOWithRolesLoaded(user));
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public void addUserCached(UserDTO userDTO) {
         users.add(userDTO);
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public Boolean updateRestaurantCached(Integer id, User user) {
-        UserDTO restaurantDTO = userMapper.toDTO(user);
+    public Boolean updateUserCached(Integer id, User user) {
+        UserDTO userDTO = userMapper.toDTOWithRolesLoaded(user);
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId().equals(id)) {
-                restaurantDTO.setId(users.get(i).getId());
-                users.set(i, restaurantDTO);
+                users.set(i, userDTO);
                 return true;
             }
         }
@@ -82,7 +90,7 @@ public class UserCacheManager {
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public Boolean updateRestaurantCached(Integer id, UserDTO userDTO) {
+    public Boolean updateUserCached(Integer id, UserDTO userDTO) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId().equals(id)) {
                 userDTO.setId(users.get(i).getId());
@@ -94,7 +102,7 @@ public class UserCacheManager {
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public Boolean deleteRestaurantCached(Integer id) {
+    public Boolean deleteUserCached(Integer id) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId().equals(id)) {
                 users.remove(i);

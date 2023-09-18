@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH, "/reports/{reportId}/verify").hasAuthority("OPERATOR")
                 .requestMatchers("/reportTypes/**").hasAuthority("ADMIN")
                 .requestMatchers("/users/{userId}").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/users/").hasAuthority("ADMIN")
                 .and()
                 .authorizeHttpRequests().anyRequest().authenticated()
                 .and()
