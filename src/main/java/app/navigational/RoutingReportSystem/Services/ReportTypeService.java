@@ -35,7 +35,6 @@ public class ReportTypeService {
         ReportType reportType = reportTypeMapper.fromDTO(reportTypeDTO);
         reportType.setId(id);
         reportType.setCreatedAt(foundType.get().getCreatedAt());
-        reportTypeRepository.deleteById(id);
         reportTypeRepository.save(reportType);
     }
 

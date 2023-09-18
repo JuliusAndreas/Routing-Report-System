@@ -49,4 +49,10 @@ public class ReportsMetadataKeysController {
         valuesService.addAttributeValue(keyId, attributeValueDTO);
         return new ResponseEntity<>(new OkResponse("Value successfully added"), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{keyId}")
+    public ResponseEntity deleteKey(@PathVariable Integer keyId) {
+        keysService.removeAttributeKey(keyId);
+        return new ResponseEntity<>(new OkResponse("Key and its values successfully removed"), HttpStatus.OK);
+    }
 }
