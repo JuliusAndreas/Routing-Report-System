@@ -58,11 +58,10 @@ public class ReportService {
 
     @Transactional(rollbackOn = {Exception.class})
     public void verifyReport(@NonNull Integer reportId) {
-        Optional<Report> foundReport = reportRepository.findByIdJoinFetchType(reportId);
-        if (foundReport.isEmpty()) {
+        Report report = reportRepository.findNotVerifiedByIdJoinFetchType(reportId);
+        if (report == null) {
             throw new NotFoundException("Such report does not exist or is already verified");
         }
-        Report report = foundReport.get();
         report.setVerified(VerifiedType.VERIFIED);
         LocalDateTime now = LocalDateTime.now();
         report.setCreatedAt(now);

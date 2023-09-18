@@ -8,14 +8,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<Report, Integer> {
 
     @Query("select r from Report r JOIN FETCH r.reportType " +
-            "where r.id = :queryId" +
+            "where r.id = :queryId " +
             "and r.verified = NOT_VERIFIED")
-    Optional<Report> findByIdJoinFetchType(@Param("queryId") Integer queryId);
+    Report findNotVerifiedByIdJoinFetchType(@Param("queryId") Integer queryId);
 
     @Query("select r from Report r JOIN FETCH r.reportType JOIN FETCH r.domainAttributes " +
             "where r.verified = NOT_VERIFIED")
