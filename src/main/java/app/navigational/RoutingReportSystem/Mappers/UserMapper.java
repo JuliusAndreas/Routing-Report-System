@@ -16,6 +16,7 @@ public interface UserMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "username", source = "userDTO.username")
-    @Mapping(target = "password", source = "userDTO.password")
     User fromDTO(UserDTO userDTO);
+
+
 }
