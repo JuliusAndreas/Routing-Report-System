@@ -25,4 +25,9 @@ public class UserDTO {
 
     @JsonView(Views.Public.class)
     private RoleType roleType;
+
+    public UserDTO(Integer id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 }

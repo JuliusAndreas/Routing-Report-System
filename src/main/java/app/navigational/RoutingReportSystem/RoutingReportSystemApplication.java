@@ -12,10 +12,6 @@ import java.util.Set;
 
 @SpringBootApplication
 public class RoutingReportSystemApplication implements CommandLineRunner {
-
-    @Autowired
-    private UserRepository userRepository;
-
     public static void main(String[] args) {
         SpringApplication.run(RoutingReportSystemApplication.class, args);
     }
