@@ -1,6 +1,7 @@
 package app.navigational.RoutingReportSystem.Entities;
 
 import app.navigational.RoutingReportSystem.Utilities.RoleType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,10 +39,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Role> roles;
 
+    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Report> reports;

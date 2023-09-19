@@ -3,6 +3,7 @@ package app.navigational.RoutingReportSystem.RabbitHandlers;
 import app.navigational.RoutingReportSystem.Entities.Report;
 import app.navigational.RoutingReportSystem.Repositories.ReportRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.locationtech.jts.geom.Point;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -27,5 +28,9 @@ public class SubmitReportHandler {
         lock.lock();
         reportRepository.save(report);
         lock.unlock();
+    }
+
+    public String geoToHash(Point point) {
+        return point.toString();
     }
 }

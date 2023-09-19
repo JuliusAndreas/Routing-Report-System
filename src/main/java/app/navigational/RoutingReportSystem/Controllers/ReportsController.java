@@ -38,11 +38,11 @@ public class ReportsController {
 
     @PostMapping("/submit")
     public ResponseEntity submitReport(@RequestBody ReportDTO reportDTO,
-                                       @RequestParam Integer userId) {
+                                       @RequestParam Integer userId) throws JsonProcessingException {
         try {
             reportService.submitReport(reportDTO, userId);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Unexpected error occured");
+            throw e;
         }
         return new ResponseEntity<>(new OkResponse("report successfully submitted"), HttpStatus.OK);
     }
