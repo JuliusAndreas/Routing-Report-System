@@ -1,12 +1,14 @@
 package app.navigational.RoutingReportSystem.Entities;
 
 import app.navigational.RoutingReportSystem.Utilities.RoleType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,10 +39,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Role> roles;
 
+    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Report> reports;
@@ -54,7 +58,16 @@ public class User {
         this.roles = roles;
     }
 
+    public void addRole(Role role) {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        roles.add(role);
+    }
+
     public void promoteToOperator() {
-        this.roles.add(new Role(RoleType.OPERATOR));
+        Role role = new Role(RoleType.OPERATOR);
+        role.setUser(this);
+        this.roles.add(role);
     }
 }

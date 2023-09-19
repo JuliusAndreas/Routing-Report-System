@@ -11,12 +11,12 @@ import java.util.List;
 
 public interface ReportRepository extends JpaRepository<Report, Integer> {
 
-    @Query("select r from Report r JOIN FETCH r.reportType " +
+    @Query("select r from Report r LEFT JOIN FETCH r.reportType " +
             "where r.id = :queryId " +
             "and r.verified = NOT_VERIFIED")
     Report findNotVerifiedByIdJoinFetchType(@Param("queryId") Integer queryId);
 
-    @Query("select r from Report r JOIN FETCH r.reportType JOIN FETCH r.domainAttributes " +
+    @Query("select r from Report r LEFT JOIN FETCH r.reportType LEFT JOIN FETCH r.domainAttributes " +
             "where r.verified = NOT_VERIFIED")
     List<Report> getAllUnverifiedReports();
 
@@ -39,7 +39,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
     List<ReportSimpleView> getAllReportsWithGivenParameters(@Param("queryGeom") Point queryGeom,
                                                             @Param("queryId") Integer queryId);
 
-    @Query("select r from Report r JOIN FETCH r.reportType JOIN FETCH r.domainAttributes " +
+    @Query("select r from Report r LEFT JOIN FETCH r.reportType LEFT JOIN FETCH r.domainAttributes " +
             "where r.id IN :queryList")
     List<Report> getReportsJoinFetchTypeAttributesByIdList(@Param("queryList") List<Integer> queryList);
 }

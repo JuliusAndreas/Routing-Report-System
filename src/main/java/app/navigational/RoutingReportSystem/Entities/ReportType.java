@@ -1,5 +1,6 @@
 package app.navigational.RoutingReportSystem.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,10 +42,12 @@ public class ReportType {
     @Column(name = "extensionDuration")
     private Long extensionDuration;
 
+    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "reportType", cascade = CascadeType.ALL)
     private List<Report> reports;
 
+    @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "reportType", cascade = CascadeType.ALL)
     private Set<ReportTypeAttributesKey> keys;
