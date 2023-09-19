@@ -13,28 +13,30 @@ import java.util.List;
 import java.util.Set;
 
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+public interface UserWithRolesMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "username", source = "user.username")
     @Mapping(target = "password", source = "user.password")
     @Mapping(target = "id", source = "user.id")
-    UserDTO toDTO(User user);
+    @Mapping(target = "roleType", expression = "java(setToRoleType(user.getRoles()))")
+    UserDTO toDTOWithRolesLoaded(User user);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "username", source = "users.username")
     @Mapping(target = "password", source = "users.password")
     @Mapping(target = "id", source = "users.id")
-    List<UserDTO> toDTO(Collection<User> users);
+    @Mapping(target = "roleType", expression = "java(setToRoleType(users.getRoles()))")
+    List<UserDTO> toDTOWithRolesLoaded(Collection<User> users);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "username", source = "userDTO.username")
     User fromDTO(UserDTO userDTO);
 
     default RoleType setToRoleType(Set<Role> roles) {
-        if (roles.stream().anyMatch(role -> role.getRoleName()== RoleType.ADMIN)) {
+        if (roles.stream().anyMatch(role -> role.getRoleName() == RoleType.ADMIN)) {
             return RoleType.ADMIN;
-        } else if (roles.stream().anyMatch(role -> role.getRoleName()== RoleType.ADMIN)) {
+        } else if (roles.stream().anyMatch(role -> role.getRoleName() == RoleType.OPERATOR)) {
             return RoleType.OPERATOR;
         } else {
             return RoleType.USER;

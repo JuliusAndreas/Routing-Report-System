@@ -6,6 +6,7 @@ import app.navigational.RoutingReportSystem.Entities.Role;
 import app.navigational.RoutingReportSystem.Entities.User;
 import app.navigational.RoutingReportSystem.Exceptions.NotFoundException;
 import app.navigational.RoutingReportSystem.Mappers.UserMapper;
+import app.navigational.RoutingReportSystem.Mappers.UserWithRolesMapper;
 import app.navigational.RoutingReportSystem.Repositories.RoleRepository;
 import app.navigational.RoutingReportSystem.Repositories.UserRepository;
 import app.navigational.RoutingReportSystem.Utilities.RoleType;
@@ -26,6 +27,7 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private UserMapper userMapper;
+    private UserWithRolesMapper userWithRolesMapper;
     private UserCacheManager userCacheManager;
     private PasswordEncoder bcryptEncoder;
 
@@ -71,7 +73,7 @@ public class UserService {
         if (foundUser == null) {
             throw new NotFoundException("User not found");
         }
-        userDTO = userMapper.toDTOWithRolesLoaded(foundUser);
+        userDTO = userWithRolesMapper.toDTOWithRolesLoaded(foundUser);
         return userDTO;
     }
 
@@ -84,7 +86,7 @@ public class UserService {
         if (foundUser == null) {
             throw new NotFoundException("User not found");
         }
-        userDTO = userMapper.toDTOWithRolesLoaded(foundUser);
+        userDTO = userWithRolesMapper.toDTOWithRolesLoaded(foundUser);
         return userDTO;
     }
 
@@ -104,7 +106,7 @@ public class UserService {
         if (!responseList.isEmpty()) {
             return responseList;
         }
-        responseList = userMapper.toDTOWithRolesLoaded(userRepository.findAllUsersJoinFetchRoles());
+        responseList = userMapper.toDTO(userRepository.findAllUsersJoinFetchRoles());
         if (responseList.isEmpty()) {
             throw new NotFoundException("No User was found");
         }
@@ -112,9 +114,9 @@ public class UserService {
     }
 
     public RoleType setToRoleType(Set<Role> roles) {
-        if (roles.contains(new Role(RoleType.ADMIN))) {
+        if (roles.stream().anyMatch(role -> role.getRoleName() == RoleType.ADMIN)) {
             return RoleType.ADMIN;
-        } else if (roles.contains(new Role(RoleType.OPERATOR))) {
+        } else if (roles.stream().anyMatch(role -> role.getRoleName() == RoleType.OPERATOR)) {
             return RoleType.OPERATOR;
         } else {
             return RoleType.USER;

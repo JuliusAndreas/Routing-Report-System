@@ -1,8 +1,13 @@
 package app.navigational.RoutingReportSystem.Services;
 
+import app.navigational.RoutingReportSystem.Cache.UserCacheManager;
 import app.navigational.RoutingReportSystem.DTOs.UserDTO;
+import app.navigational.RoutingReportSystem.Entities.Role;
 import app.navigational.RoutingReportSystem.Entities.User;
-import app.navigational.RoutingReportSystem.Mappers.UserMapper;
+import app.navigational.RoutingReportSystem.Exceptions.NotFoundException;
+import app.navigational.RoutingReportSystem.Mappers.UserWithRolesMapper;
+import app.navigational.RoutingReportSystem.Repositories.UserRepository;
+import app.navigational.RoutingReportSystem.Utilities.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,17 +23,25 @@ import java.util.stream.Collectors;
 public class JwtUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserService userService;
+    private UserCacheManager userCacheManager;
     @Autowired
-    private UserMapper userMapper;
+    private UserRepository userRepository;
+    @Autowired
+    private UserWithRolesMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDTO foundUserDTO = userService.getUserEntityByUsername(username);
+        UserDTO foundUserDTO = userCacheManager.getUserByUsernameCached(username);
         if (foundUserDTO == null) {
-            throw new RuntimeException("Invalid user");
+            User foundUser = userRepository.findByUsernameJoinFetch(username);
+            if (foundUser == null) {
+                throw new NotFoundException("User not found");
+            }
+            foundUserDTO = userMapper.toDTOWithRolesLoaded(foundUser);
         }
-        User foundUser = userMapper.fromDTOWithFullProperties(foundUserDTO);
+        User foundUser = userMapper.fromDTO(foundUserDTO);
+        foundUser.setPassword(foundUserDTO.getPassword());
+        foundUser.setRoles(roleTypeToSet(foundUserDTO.getRoleType()));
         Set<GrantedAuthority> authorities = foundUser
                 .getRoles()
                 .stream()
@@ -36,5 +49,15 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .collect(Collectors.toSet());
         return new org.springframework.security.core.userdetails.User(foundUser.getUsername()
                 , foundUser.getPassword(), authorities);
+    }
+
+    public Set<Role> roleTypeToSet(RoleType roleType) {
+        if (roleType == RoleType.ADMIN) {
+            return Set.of(new Role(RoleType.ADMIN), new Role(RoleType.OPERATOR), new Role(RoleType.USER));
+        } else if (roleType == RoleType.OPERATOR) {
+            return Set.of(new Role(RoleType.OPERATOR), new Role(RoleType.USER));
+        } else {
+            return Set.of(new Role(RoleType.USER));
+        }
     }
 }

@@ -3,6 +3,7 @@ package app.navigational.RoutingReportSystem.Mappers;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class MapStructConfig {
@@ -29,5 +30,11 @@ public class MapStructConfig {
     @Bean
     public ReportMapper reportMapper() {
         return Mappers.getMapper(ReportMapper.class);
+    }
+
+    @Bean
+    @Primary
+    public UserWithRolesMapper userWithRolesMapper() {
+        return Mappers.getMapper(UserWithRolesMapper.class);
     }
 }

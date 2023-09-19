@@ -4,6 +4,7 @@ import app.navigational.RoutingReportSystem.Configurations.RedisConfig;
 import app.navigational.RoutingReportSystem.DTOs.UserDTO;
 import app.navigational.RoutingReportSystem.Entities.User;
 import app.navigational.RoutingReportSystem.Mappers.UserMapper;
+import app.navigational.RoutingReportSystem.Mappers.UserWithRolesMapper;
 import app.navigational.RoutingReportSystem.Repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class UserCacheManager {
     private final UserRepository userRepository;
 
     @NonNull
-    private final UserMapper userMapper;
+    private final UserWithRolesMapper userMapper;
 
     private RList<UserDTO> users;
 
