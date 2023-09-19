@@ -1,5 +1,6 @@
 package app.navigational.RoutingReportSystem.Services;
 
+import app.navigational.RoutingReportSystem.Configurations.RabbitConfig;
 import app.navigational.RoutingReportSystem.DTOs.ReportDTO;
 import app.navigational.RoutingReportSystem.Entities.Report;
 import app.navigational.RoutingReportSystem.Entities.ReportDomainAttribute;
@@ -8,12 +9,18 @@ import app.navigational.RoutingReportSystem.Entities.User;
 import app.navigational.RoutingReportSystem.Exceptions.NotFoundException;
 import app.navigational.RoutingReportSystem.Mappers.ReportMapper;
 import app.navigational.RoutingReportSystem.Projections.ReportSimpleView;
-import app.navigational.RoutingReportSystem.Repositories.*;
+import app.navigational.RoutingReportSystem.Repositories.ReportAttributeValueRepository;
+import app.navigational.RoutingReportSystem.Repositories.ReportRepository;
+import app.navigational.RoutingReportSystem.Repositories.ReportTypeRepository;
+import app.navigational.RoutingReportSystem.Repositories.UserRepository;
 import app.navigational.RoutingReportSystem.Utilities.VerifiedType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.locationtech.jts.io.ParseException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,14 +31,15 @@ import java.util.*;
 public class ReportService {
 
     private ReportRepository reportRepository;
-    private ReportDomainAttributeRepository domainAttributeRepository;
     private ReportMapper reportMapper;
     private ReportTypeRepository typeRepository;
     private UserRepository userRepository;
     private ReportAttributeValueRepository attributeValueRepository;
+    private RabbitTemplate rabbitTemplate;
+    private ObjectMapper objectMapper;
 
     @Transactional(rollbackOn = {Exception.class})
-    public void submitReport(@NonNull ReportDTO reportDTO, @NonNull Integer userId) {
+    public void submitReport(@NonNull ReportDTO reportDTO, @NonNull Integer userId) throws JsonProcessingException {
         Optional<User> foundUser = userRepository.findById(userId);
         if (foundUser.isEmpty()) {
             throw new NotFoundException("User not found");
@@ -47,14 +55,18 @@ public class ReportService {
                 reportDTO.getDomainAttributes(), report);
         if (reportType.getVerifiable()) {
             report.setPropertiesForVerifiableReport(reportType, foundUser.get(), domainAttributeList);
-            reportRepository.save(report);
+            byte[] message = objectMapper.writeValueAsBytes(report);
+            rabbitTemplate.convertAndSend(RabbitConfig.REPORTS_EXCHANGE_NAME,
+                    "data.report", message);
             return;
         }
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reportExpiration = now.plus(reportType.getDuration(), reportType.getDurationUnit());
         report.setPropertiesForNonVerifiableReport(now, reportExpiration, reportType, foundUser.get(),
                 domainAttributeList);
-        reportRepository.save(report);
+        byte[] message = objectMapper.writeValueAsBytes(report);
+        rabbitTemplate.convertAndSend(RabbitConfig.REPORTS_EXCHANGE_NAME,
+                "data.report", message);
     }
 
     @Transactional(rollbackOn = {Exception.class})

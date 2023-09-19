@@ -22,26 +22,7 @@ public class RoutingReportSystemApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(userRepository.findAllUsersJoinFetchRoles().get(1).getRoles());
+
     }
 
-    public Set<Role> roleTypeToSet(RoleType roleType) {
-        if (roleType == RoleType.ADMIN) {
-            return Set.of(new Role(RoleType.ADMIN), new Role(RoleType.OPERATOR), new Role(RoleType.USER));
-        } else if (roleType == RoleType.OPERATOR) {
-            return Set.of(new Role(RoleType.OPERATOR), new Role(RoleType.USER));
-        } else {
-            return Set.of(new Role(RoleType.USER));
-        }
-    }
-
-    public RoleType setToRoleType(Set<Role> roles) {
-        if (roles.contains(new Role(RoleType.ADMIN))) {
-            return RoleType.ADMIN;
-        } else if (roles.contains(new Role(RoleType.OPERATOR))) {
-            return RoleType.OPERATOR;
-        } else {
-            return RoleType.USER;
-        }
-    }
 }
