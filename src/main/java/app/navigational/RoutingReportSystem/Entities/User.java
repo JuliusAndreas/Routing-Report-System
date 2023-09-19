@@ -66,6 +66,8 @@ public class User {
     }
 
     public void promoteToOperator() {
-        this.roles.add(new Role(RoleType.OPERATOR));
+        Role role = new Role(RoleType.OPERATOR);
+        role.setUser(this);
+        this.roles.add(role);
     }
 }

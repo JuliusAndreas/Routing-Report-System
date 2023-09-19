@@ -1,6 +1,7 @@
 package app.navigational.RoutingReportSystem.Services;
 
 import app.navigational.RoutingReportSystem.Configurations.RabbitConfig;
+import app.navigational.RoutingReportSystem.DTOs.RabbitSubmitReportDTO;
 import app.navigational.RoutingReportSystem.DTOs.ReportDTO;
 import app.navigational.RoutingReportSystem.Entities.Report;
 import app.navigational.RoutingReportSystem.Entities.ReportDomainAttribute;
@@ -51,20 +52,7 @@ public class ReportService {
         if (!identicalReports.isEmpty()) {
             return;
         }
-        List<ReportDomainAttribute> domainAttributeList = attributesMapToList(
-                reportDTO.getDomainAttributes(), report);
-        if (reportType.getVerifiable()) {
-            report.setPropertiesForVerifiableReport(reportType, foundUser.get(), domainAttributeList);
-            byte[] message = objectMapper.writeValueAsBytes(report);
-            rabbitTemplate.convertAndSend(RabbitConfig.REPORTS_EXCHANGE_NAME,
-                    "data.report", message);
-            return;
-        }
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reportExpiration = now.plus(reportType.getDuration(), reportType.getDurationUnit());
-        report.setPropertiesForNonVerifiableReport(now, reportExpiration, reportType, foundUser.get(),
-                domainAttributeList);
-        byte[] message = objectMapper.writeValueAsBytes(report);
+        byte[] message = objectMapper.writeValueAsBytes(new RabbitSubmitReportDTO(reportDTO, userId));
         rabbitTemplate.convertAndSend(RabbitConfig.REPORTS_EXCHANGE_NAME,
                 "data.report", message);
     }

@@ -57,4 +57,10 @@ public class UserController {
         }
         return fetchedUsers;
     }
+
+    @PatchMapping("/{userId}/promote")
+    public ResponseEntity promoteAUser(@PathVariable Integer userId) {
+        userService.promoteToOperator(userId);
+        return new ResponseEntity<>(new OkResponse("User successfully promoted"), HttpStatus.OK);
+    }
 }
