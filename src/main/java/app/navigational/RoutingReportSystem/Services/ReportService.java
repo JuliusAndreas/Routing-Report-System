@@ -21,6 +21,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.locationtech.jts.io.ParseException;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -38,9 +40,12 @@ public class ReportService {
     private ReportAttributeValueRepository attributeValueRepository;
     private RabbitTemplate rabbitTemplate;
     private ObjectMapper objectMapper;
+    private RedissonClient client;
 
     @Transactional(rollbackOn = {Exception.class})
     public void submitReport(@NonNull ReportDTO reportDTO, @NonNull Integer userId) throws JsonProcessingException {
+        RLock lock = client.getLock("lock");
+        lock.lock();
         Optional<User> foundUser = userRepository.findById(userId);
         if (foundUser.isEmpty()) {
             throw new NotFoundException("User not found");
@@ -55,6 +60,7 @@ public class ReportService {
         byte[] message = objectMapper.writeValueAsBytes(new RabbitSubmitReportDTO(reportDTO, userId));
         rabbitTemplate.convertAndSend(RabbitConfig.REPORTS_EXCHANGE_NAME,
                 "data.report", message);
+        lock.unlock();
     }
 
     @Transactional(rollbackOn = {Exception.class})

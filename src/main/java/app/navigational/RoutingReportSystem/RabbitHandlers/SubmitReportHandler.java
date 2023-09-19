@@ -45,8 +45,6 @@ public class SubmitReportHandler {
     public void submitReportInParallel(byte[] message) throws IOException {
         RabbitSubmitReportDTO rabbitSubmitReportDTO = objectMapper.
                 readValue(message, RabbitSubmitReportDTO.class);
-        RLock lock = client.getLock("lock");
-        lock.lock();
         ReportDTO reportDTO = rabbitSubmitReportDTO.getReportDTO();
         Integer userId = rabbitSubmitReportDTO.getUserId();
         Report report = reportMapper.fromDTO(reportDTO);
@@ -64,7 +62,6 @@ public class SubmitReportHandler {
         report.setPropertiesForNonVerifiableReport(now, reportExpiration, reportType, foundUser.get(),
                 domainAttributeList);
         reportRepository.save(report);
-        lock.unlock();
     }
 
     public String geoToHash(Point point) {
