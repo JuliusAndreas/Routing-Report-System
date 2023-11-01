@@ -31,3 +31,18 @@ intervalInCron:
 
 queues:
   reports: "report-queue"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+
